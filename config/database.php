@@ -6,10 +6,10 @@
  * =====================================
  */
 
-	$dbms = "mysql";
-	$host = "localhost";
-	$database = "forum";
-	$username = "username";
-	$password = "password";
-	$dsn = "{$dbms}:host={$host};dbname={$database};charset=utf8";
+	$_dbms = "mysql";
+	$_host = "localhost";
+	$_database = "forum";
+	$_username = "username";
+	$_password = "password";
+	$_dsn = "{$_dbms}:host={$_host};dbname={$_database};charset=utf8";
 ?>
