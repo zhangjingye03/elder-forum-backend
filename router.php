@@ -9,7 +9,7 @@
 
 	$_method = $_SERVER['REQUEST_METHOD'];
 	$_request = explode("/", substr($_SERVER['REQUEST_URI'], 1), 16);
-
+	# var_dump($_SERVER);
 	require_once('common/all_utils.php');
 	require_once("config/routes.php");
 
@@ -30,7 +30,7 @@
 		if (!isset($_tmp_ref[""])) die_with_code(404);
 		$_tmp_ref = $_tmp_ref[""];
 	}
-	echo($_tmp_ref);
-	if (!file_exist($_tmp_ref)) die_with_code(410);
+	# echo($_tmp_ref);
+	if (!file_exists($_tmp_ref)) die_with_code(410);
 	require_once($_tmp_ref);
 ?>
