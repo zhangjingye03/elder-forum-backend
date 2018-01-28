@@ -11,10 +11,11 @@
 		die();
 	}
 
-	function die_in_json($reason, $go = '') {
+	function die_in_json($status, $reason='', $go = '') {
 		$j = [];
 		$j['status'] = 'failed';
-		$j['reason'] = $reason;
+		if (strlen($reason) != 0)
+			$j['reason'] = $reason;
 		if (strlen($go) != 0)
 			$j['go'] = $go;
 		die(json_encode($j));
