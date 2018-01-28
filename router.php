@@ -9,7 +9,9 @@
 
 	$_method = $_SERVER['REQUEST_METHOD'];
 	$_request = explode("/", substr($_SERVER['REQUEST_URI'], 1), 16);
-	# var_dump($_SERVER);
+	# 去除问号（路由到其它php后用$_GET获得）
+	$_request[sizeof($_request) - 1] = explode("?", $_request[sizeof($_request) - 1])[0];
+	# 这里require过了，别的地方不用再写了哦
 	require_once('common/all_utils.php');
 	require_once("config/routes.php");
 
