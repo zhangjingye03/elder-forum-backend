@@ -1,0 +1,39 @@
+[
+    {
+        "key": "username",
+        "desc": "用户名",
+        "limit": "3~15个英文字符/数字",
+        "regex": "[0-9a-zA-Z._-]{3,15}",
+        "flag": ["must"]
+    }, {
+        "key": "password",
+        "desc": "密码",
+        "limit": "6~20位字符",
+        "regex": ".{6,20}",
+        "flag": ["must", "password"]
+    }, {
+        "key": "re_password",
+        "desc": "再输一次",
+        "limit": "别输错了哟",
+        "regex": ".{6,20}",
+        "flag": ["must", "password"]
+    }, {
+        "key": "alias",
+        "desc": "昵称",
+        "limit": "6~20位字符", 
+        "regex": ".{6,20}",
+        "flag": ["must"]
+    }, {
+        "key": "email",
+        "desc": "邮箱",
+        "limit": "输入您的邮箱",
+        "regex": "[0-9a-zA-Z._-]{1,20}@[0-9a-zA-Z._-]{1,20}.[0-9a-z]{2,6}",
+        "flag": ["must"]
+    }, {
+        "key": "captcha",
+        "desc": "验证码",
+        "limit": "你的眼睛可是最雪亮的！",
+        "regex": "[0-9a-zA-Z]{5}",
+        "flag": ["must"]
+    }
+]

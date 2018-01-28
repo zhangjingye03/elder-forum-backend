@@ -1,0 +1,21 @@
+[
+    {
+        "key": "loginname",
+        "desc": "登录名",
+        "limit": "可以是用户名或邮箱哦",
+        "regex": "[0-9a-zA-Z._-]{3,15}|[0-9a-zA-Z._-]{1,20}@[0-9a-zA-Z._-]{1,20}.[0-9a-z]{2,6}",
+        "flag": ["must"]
+    }, {
+        "key": "password",
+        "desc": "密码",
+        "limit": "就不告诉你~",
+        "regex": ".{6,20}",
+        "flag": ["must", "password"]
+    },  {
+        "key": "captcha",
+        "desc": "验证码",
+        "limit": "你的眼睛可是最雪亮的！",
+        "regex": "[0-9a-zA-Z]{5}",
+        "flag": ["must"]
+    }
+]
