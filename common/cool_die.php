@@ -13,7 +13,7 @@
 
 	function die_in_json($status, $reason='', $go = '') {
 		$j = [];
-		$j['status'] = 'failed';
+		$j['status'] = $status;
 		if (strlen($reason) != 0)
 			$j['reason'] = $reason;
 		if (strlen($go) != 0)

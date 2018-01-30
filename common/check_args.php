@@ -1,13 +1,13 @@
 <?php
 	function check_method(...$method) {
-		foreach ($method as $m) {
+		foreach ($method as $k => $m) {
 			if ($m == $_SERVER["REQUEST_METHOD"]) return true;
 		}
 		die_with_code(405);
 	}
 
 	function check_args($method, $args) {
-		foreach ($args as $s) {
+		foreach ($args as $k => $s) {
 			switch ($method) {
 				case "GET":
 					if (!isset($_GET[$s]))	die_with_code(400);
@@ -22,7 +22,7 @@
 
 	function check_args_from_json($method, $json) {
 		$j = json_decode(file_get_contents($json));
-		foreach ($j as $s) {
+		foreach ($j as $k => $s) {
 			# 如果是非必须参数（flag中无must属性），可以跳过
 			if (strpos(implode(", ", $s->flag), "must") !== false)
 				continue;
