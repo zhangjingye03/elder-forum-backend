@@ -38,7 +38,7 @@
 		}
 
 		function select($what) {
-			$this->s .= "SELECT " . strize($what) . " ";
+			$this->s .= "SELECT " . $this->strize($what) . " ";
 			return $this;
 		}
 
@@ -50,7 +50,7 @@
 
 		function insertInto($table, $col, $arg, $type = null) {
 			$this->arg = $arg; $this->type = $type;
-			$this->s .= "INSERT INTO {$table} (" . strize($col) . ") VALUES (";
+			$this->s .= "INSERT INTO {$table} (" . $this->strize($col) . ") VALUES (";
 			if (is_array($arg)) {
 				for ($i = 0; $i < sizeof($arg); $i++) {
 					$this->s .= "?, ";
@@ -83,7 +83,7 @@
 		}
 
 		function orderBy($what) {
-			$this->s .= "ORDER BY " . strize($what) . " ";
+			$this->s .= "ORDER BY " . $this->strize($what) . " ";
 			return $this;
 		}
 
@@ -107,11 +107,16 @@
 						$this->dbo->bindParam($i + 1, $this->arg[$i], $this->type[$i]);
 				}
 			} else if (is_string($this->arg)) {
-				$this->dbo->bindParam(1, $this->arg, $this->type);
+				$this->dbo->bindParam(1, $this->arg, ($this->type == null) ? PDO::PARAM_STR : $this->type);
 			}
 			$this->dbo->execute();
 			if ($this->dbo->errorCode() != 0)
 				throw new \Exception(var_dump($this->dbo->errorInfo()), 1);
+			return $this;
+		}
+
+		function debug() {
+			return $this->s;
 		}
 
 		function rowCount() {
@@ -120,10 +125,16 @@
 			return $this->dbo->rowCount();
 		}
 
+		function fetch() {
+			if ($this->dbo == null)
+				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
+			return $this->dbo->fetch(PDO::FETCH_ASSOC);
+		}
+
 		function fetchAll() {
 			if ($this->dbo == null)
 				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
-			return $this->dbo->fetchAll();
+			return $this->dbo->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
 

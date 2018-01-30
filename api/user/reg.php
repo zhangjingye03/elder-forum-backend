@@ -27,7 +27,8 @@
 		if ($q->rowCount() != 1)
 			throw new \Exception("注册失败，未知错误。", 1);
 
-		push_user_session($username, $email, $alias, "default");
+		$r = $q->fetch();
+		push_user_session($r["uid"], $username, $email, $alias, "default");
 
 		# TODO: 跳转到注册前的页面
 		die_in_json("ok", null, "/forum/");

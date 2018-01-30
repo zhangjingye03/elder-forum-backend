@@ -2,7 +2,7 @@
 	require_once('vendor/autoload.php');
 	use Gregwar\Captcha\CaptchaBuilder;
 
-	session_start();
+	# session_start();
 
 	$builder = new CaptchaBuilder;
 	$builder->build();

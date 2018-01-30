@@ -7,14 +7,12 @@
  */
 
 	check_method("POST");
-	check_post_captcha();
+	#check_post_captcha();
 	check_post_args("username", "password");
 
 	$username = $_POST["username"];
 	$password = $_POST["password"];
 
-
-	require_once("common/db_utils.php");
 	try {
 		$q = new SQLStatement;
 
@@ -26,9 +24,9 @@
 		if ($q->rowCount() < 1)
 			throw new \Exception("用户名或密码错误。", 1);
 
-		$r = $q->fetchAll();
+		$r = $q->fetch();
 
-		push_user_session($username, $r[0]["email"], $r[0]["alias"], $r[0]["avatar"]);
+		push_user_session($r["uid"], $username, $r["email"], $r["alias"], $r["avatar"]);
 
 		# TODO: 跳转到登录前的页面
 		die_in_json("ok", null, "/forum/");

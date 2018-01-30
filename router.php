@@ -17,22 +17,23 @@
 
 	# 临时引用变量，指向第一级路由入口
 	$_tmp_ref = $_routes;
-	$_found = false;
+	$_found = -1;
 	foreach ($_request as $_sub) {
 		if (!isset($_tmp_ref)) break;
 		# 如果存在下一级入口，则将临时引用变量设置为下一级入口
 		if (isset($_tmp_ref[$_sub])) {
-			$_found = true;
+			$_found++;
 			$_tmp_ref = $_tmp_ref[$_sub];
 		}
 	}
 
-	if (!$_found) die_with_code(404);
+	if ($_found < 0) die_with_code(404);
 	if (is_array($_tmp_ref)) {
 		if (!isset($_tmp_ref[""])) die_with_code(404);
 		$_tmp_ref = $_tmp_ref[""];
 	}
 	# echo($_tmp_ref);
 	if (!file_exists($_tmp_ref)) die_with_code(410);
+	session_start();
 	require_once($_tmp_ref);
 ?>
