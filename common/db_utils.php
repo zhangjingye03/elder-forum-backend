@@ -97,6 +97,11 @@
 			return $this;
 		}
 
+		function limit($arg1, $arg2 = null) {
+			$this->s .= "LIMIT {$arg1} ";
+			if ($arg2 != null) $this->s .= ", {$arg2} ";
+		}
+
 		function execute() {
 			$this->dbo = $this->db->prepare($this->s . ";");
 			if (is_array($this->arg)) {
@@ -110,6 +115,7 @@
 				$this->dbo->bindParam(1, $this->arg, ($this->type == null) ? PDO::PARAM_STR : $this->type);
 			}
 			$this->dbo->execute();
+			$this->s = "";
 			if ($this->dbo->errorCode() != 0)
 				throw new \Exception(var_dump($this->dbo->errorInfo()), 1);
 			return $this;
@@ -138,4 +144,7 @@
 		}
 	}
 
+	function calc_limit_offset($count, $page) {
+		return ($page - 1) * $count
+	}
 ?>

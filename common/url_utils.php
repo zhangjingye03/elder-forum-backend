@@ -21,4 +21,13 @@
 
 		return $_request[++$_found];
 	}
+
+	function read_optional_get_args(...$arg) {
+		foreach ($arg as $k => $v) {
+			if (isset($_GET[$v])) {
+				global $$v;
+				$$v = $_GET[$v];
+			}
+		}
+	}
 ?>
