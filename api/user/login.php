@@ -7,7 +7,7 @@
  */
 
 	check_method("POST");
-	#check_post_captcha();
+	check_post_captcha();
 	check_post_args("username", "password");
 
 	$username = $_POST["username"];
