@@ -35,5 +35,10 @@
 	# echo($_tmp_ref);
 	if (!file_exists($_tmp_ref)) die_with_code(410);
 	session_start();
-	require_once($_tmp_ref);
+	# require_once($_tmp_ref);
+	try {
+		require_once($_tmp_ref);
+	} catch (Exception $ex) {
+		die_in_json("error", $ex->getTraceAsString());
+	}
 ?>
