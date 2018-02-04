@@ -1,5 +1,4 @@
 <?php
-	check_method("GET");
 
 	$q = new SQLStatement;
 	$q->select("*")
