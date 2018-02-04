@@ -32,7 +32,7 @@
 			if (is_string($what))
 				return $what;
 			else if (is_array($what))
-				return implode(", ", $what);
+				return "`" . implode("`, `", $what) . "`";
 			else
 				throw new \Exception("Unsupported type.", 1);
 		}
@@ -63,19 +63,23 @@
 			$this->s .= ")";
 		}
 
+		function dropTable($which) {
+			$this->s .= "DROP TABLE `{$which}` ";
+		}
+
 		function from($what) {
 			$this->s .= "FROM {$what} ";
 			return $this;
 		}
 
-		function set($what, $arg, $type = null) {
+		function set($what, $arg = null, $type = null) {
 			$this->s .= "SET {$what} ";
 			$this->arg = $arg;
 			$this->type = $type;
 			return $this;
 		}
 
-		function where($what, $arg, $type = null) {
+		function where($what, $arg = null, $type = null) {
 			$this->s .= "WHERE {$what} ";
 			$this->arg = $arg;
 			$this->type = $type;
@@ -145,6 +149,7 @@
 	}
 
 	function calc_limit_offset($count, $page) {
+		if (!is_integer($count) || !is_integer($page)) return 0;
 		return ($page - 1) * $count
 	}
 ?>
