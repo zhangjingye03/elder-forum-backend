@@ -8,17 +8,7 @@
 	read_optional_get_args("count", "page", "username");
 	if ($count > 100 || $count < 1) $count = 20;
 
-	$q = new SQLStatement;
-	$q->select("id")
-	  ->from("category")
-	  ->where("name = ?", $cn)
-	  ->execute();
-
-	if ($q->rowCount() < 1)
-		die_with_code(410);
-
-	$r = $q->fetch();
-	$cid = $r["id"] - 0;
+	$cid = get_category_id($cn);
 
 	# 浏览量+1
 	$q->update("category_" . $cid)
