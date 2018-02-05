@@ -63,6 +63,10 @@
 			$this->s .= ")";
 		}
 
+		function createTable($name) {
+			$this->s .= "CREATE TABLE {$name} ";
+		}
+
 		function dropTable($which) {
 			$this->s .= "DROP TABLE `{$which}` ";
 		}
@@ -88,6 +92,10 @@
 			$this->arg = $arg;
 			$this->type = $type;
 			return $this;
+		}
+
+		function like($what) {
+			$this->s .= "LIKE {$what} ";
 		}
 
 		function orderBy($what) {
@@ -149,6 +157,12 @@
 			if ($this->dbo == null)
 				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
 			return $this->dbo->fetchAll(PDO::FETCH_ASSOC);
+		}
+
+		function lastInsertId() {
+			if ($this->dbo == null)
+				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
+			return $this->dbo->lastInsertId() - 0;
 		}
 	}
 
