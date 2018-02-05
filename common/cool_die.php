@@ -3,6 +3,10 @@
  * 璀璨的死法 /common/cool_die.php
  * ====================================================
  * 包含几个自定义的die()函数，让你的代码死得与众不同 [滑稽]
+ * die_with_code($code)
+ *   终止代码并返回错误代码$code
+ * die_in_json($status, $reason = null, $go = null)
+ *   终止代码并返回json
  * ====================================================
  */
 
@@ -11,12 +15,12 @@
 		die();
 	}
 
-	function die_in_json($status, $reason='', $go = '') {
+	function die_in_json($status, $reason = null, $go = null) {
 		$j = [];
 		$j['status'] = $status;
-		if (strlen($reason) != 0)
+		if (isset($reason))
 			$j['reason'] = $reason;
-		if (strlen($go) != 0)
+		if (isset($go))
 			$j['go'] = $go;
 		die(json_encode($j));
 	}

@@ -1,4 +1,20 @@
 <?php
+/**
+ * 处理各种参数的函数库 /common/arg_utils.php
+ * ==================================================================
+ * 各种处理参数的函数
+ * check_method(...$method) 检查请求的方法
+ * get_args_from_other_method($method) 处理PUT、DELETE、PATCH的参数
+ * check_X_args(...$args) 检查方法X中是否有对应参数
+ * check_X_args_from_json($json) 检查方法X中的参数是否符合json中的定义
+ * read_required_X_args(...$args) 将提交方法X中的参数读到全局变量中
+ * read_optional_X_args(...$args) 同上，只不过参数可选
+ * allow_remaining_slash_arg_count(...$num) 允许URL中以/分隔参数的个数
+ * get_remaining_slash_arg_count() 获取以/分隔的参数的个数
+ * get_next_slash_arg() 获取下一个以/分隔的参数
+ * ==================================================================
+ */
+
 	function check_method(...$method) {
 		foreach ($method as $k => $m) {
 			if ($m == $_SERVER["REQUEST_METHOD"]) return true;

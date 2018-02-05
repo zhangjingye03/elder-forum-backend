@@ -1,4 +1,19 @@
 <?php
+/**
+ * 用户处理函数库 /common/user_utils.php
+ * =======================================================
+ * 各种用户数据的打杂
+ * is_logged_in() 判断是否登录
+ * require_login() 此页面需要登录才能访问
+ * push_user_session(...) 将用户数据压入session
+ * check_user_existence(...) 检查用户是否被注册
+ * is_admin() 检查当前用户是否管理员
+ * is_category_owner($cid) 检查当前用户是否指定版块的版主
+ * is_topic_owner($cid, $tid) 检查当前用户是否指定帖子的楼主
+ * is_topic_reply_owner($cid, $tid, $rid)
+ *   检查当前用户是否指定楼层的层主
+ * =======================================================
+ */
 
 	function is_logged_in() {
 		if (!isset($_SESSION["username"])) return false;
@@ -33,10 +48,6 @@
 		} catch (Exception $ex) {
 			die_in_json("failed", $ex->getMessage());
 		}
-	}
-
-	function check_sensitive_words(...$content) {
-		// TODO
 	}
 
 	function is_admin() {
