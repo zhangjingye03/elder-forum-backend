@@ -6,12 +6,11 @@
  * =========================================
  */
 
+	require_once("arg_utils.php");
 	require_once("array_utils.php");
-	require_once("check_args.php");
 	require_once("check_captcha.php");
 	require_once("cool_die.php");
 	require_once("db_utils.php");
 	require_once("forum_utils.php");
-	require_once("url_utils.php");
 	require_once("user_utils.php");
 ?>
