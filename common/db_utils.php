@@ -67,6 +67,10 @@
 			$this->s .= "DROP TABLE `{$which}` ";
 		}
 
+		function deleteFrom($which) {
+			$this->s .= "DELETE FROM `{$which}` ";
+		}
+
 		function from($what) {
 			$this->s .= "FROM {$what} ";
 			return $this;
