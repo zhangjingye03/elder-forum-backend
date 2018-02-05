@@ -1,28 +1,36 @@
-# 2017级寒假作业
-**大家的寒假作业就用这个仓库来管理吧~**  
+# 长者论坛 后端部分
 
-## 操作说明
-1. 每个小组的不同方向按照 `小组名-任务内容-方向` 的格式（英文）建立新分支，例如 `saltfish-tieba-backend`  
-2. 如果写了文档或者有其他相关资源文件如流程图什么的需要共享可以建立分支，命名为 `doc`，如 `saltfish-tieba-doc`
-3. 每个分支下至少有个 `readme` 用中文说明一下这个分支的内容
-3. 尽量多 `push`，`commit` 信息要概括性稍微强一些，要表达有用的信息
-4. 因为最初远端只有这个主分支，所以创建新分支之后要手动将本地新分支推到远端，详情见下方说明
-5. 如果发现在推的时候被服务器拒绝（原因是无权限而不是因为 commit 冲突），可能是由于某些神奇的原因导致你没有被加进有这个仓库写入权限的 team，请联系 401 处理。
+## 目录结构
+* `api`：后端接口处理文件
+  * `forum`：论坛核心接口
+  * `user`：用户接口
+* `common`：公用函数库
+* `config`：公用配置文件
+  * `databases.php`：数据库配置文件
+  * `routes.php`：路由配置文件
+  * `template_*.json`：填写登录/注册/修改个人信息时的模板
+* `vendor` 和 `composer.lock`、`composer.json`：composer相关文件
 
-## git 操作说明
-```shell
-# 克隆本仓库
-git clone git@github.com:100steps/WinterVacation2017.git
-# 进入项目文件夹
-cd WinterVacation2017
 
-############## 需要建立一个空白的新分支时：##############
-# 建立一个不基于任何 commit 的新分支
-git checkout --orphan 分支名
-# 删除本目录下的所有文件以获得清爽的工作目录
-rm -f ./*
-#### 开始工作 ####
-
-############# 推送本地的新分支到远端 #############
-git push -u origin 分支名:分支名
+## nginx 配置指南
+```nginx
+server {
+        # ...
+        # php-fpm 配置，因人而异
+        location ~* \.php$ {
+                try_files $uri =404;
+                fastcgi_index index.php;
+                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+                include /usr/local/nginx/conf/fastcgi.conf;
+        }
+        # /api/ 打头：调用接口； /forum/ 打头：调用前端静态模板
+        location ~ ^(/api/|/forum/) {
+                rewrite ^(.*)$ /router.php last;
+        }
+        # /common/ 或 /config/ 打头，以及composer相关文件：禁止访问
+        location ~ ^(/common/|/config/|/vendor/|/composer) {
+                return 403;
+        }
+        # ...
+}
 ```
