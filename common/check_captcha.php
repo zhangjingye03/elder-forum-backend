@@ -1,7 +1,7 @@
 <?php
 	function check_captcha($input) {
 		return true;
-		session_start();
+		# session_start();
 		if (!isset($_SESSION["captcha"])) die_with_code(400);
 		if ($_SESSION["captcha"] != $input) die_in_json("failed", "验证码不正确！");
 		# 及时销毁暂存验证码，防止重复利用
@@ -18,5 +18,13 @@
 		return true;
 		if (!isset($_GET["captcha"])) die_with_code("没有填写验证码！");
 		check_captcha($_GET["captcha"]);
+	}
+
+	function check_delete_captcha() {
+		return true;
+	}
+
+	function check_put_captcha() {
+		return true;
 	}
 ?>

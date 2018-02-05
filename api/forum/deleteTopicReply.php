@@ -1,5 +1,6 @@
 <?php
 
+	check_delete_captcha();
 	$cn = get_next_slash_arg();
 	$cid = get_category_id($cn);
 	$tid = get_next_slash_arg();
