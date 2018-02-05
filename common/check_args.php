@@ -59,4 +59,11 @@
 	}
 
 
+	function read_required_args($method, $args) {
+
+	}
+
+	function read_required_get_args(...$args) {
+		read_required_get_args("GET", $args);
+	}
 ?>
