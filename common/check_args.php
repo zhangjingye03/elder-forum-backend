@@ -81,4 +81,53 @@
 	function read_required_delete_args(...$args) {
 		read_required_args(get_args_from_other_method("DELETE"), $args);
 	}
+
+	function read_optional_args($arr, $args) {
+		foreach ($args as $k => $v) {
+			if (isset($arr[$v])) {
+				global $$v;
+				$$v = $arr[$v];
+			}
+		}
+	}
+
+	function read_optional_get_args(...$args) {
+		read_optional_args($_GET, $args);
+	}
+
+	function read_optional_post_args(...$args) {
+		read_optional_args($_POST, $args);
+	}
+
+	function read_optional_put_args(...$args) {
+		read_optional_args(get_args_from_other_method("PUT"), $args);
+	}
+
+	function read_optional_delete_args(...$args) {
+		read_optional_args(get_args_from_other_method("DELETE"), $args);
+	}
+
+	function allow_remaining_slash_arg_count(...$num) {
+		global $_request, $_found;
+		$now_count = get_remaining_slash_arg_count();
+		foreach ($num as $n => $v) {
+			if ($now_count == $v) return true;
+		}
+		die_with_code(406);
+	}
+
+	function get_remaining_slash_arg_count() {
+		global $_request, $_found;
+		return sizeof($_request) - $_found - 1;
+	}
+
+	function get_next_slash_arg() {
+		global $_request, $_found;
+		if (!isset($_request[$_found + 1]))
+			throw new \Exception("No next slash arg.", 1);
+
+		return $_request[++$_found];
+	}
+
+
 ?>
