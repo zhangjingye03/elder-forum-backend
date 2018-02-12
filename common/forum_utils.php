@@ -5,6 +5,8 @@
  * 论坛中查询数据、处理数据的函数库
  * get_category_id($cn)
  *   传入版块名称，返回版块id
+ * anti_xss(...$arr)
+ *   传入参数列表，防止对应的变量做XSS攻击
  * ===========================================
  */
 
@@ -20,5 +22,12 @@
 
 		$r = $q->fetch();
 		return $r["id"];
+	}
+
+	function anti_xss(...$arr) {
+		foreach ($arr as $k => $v) {
+			global $$v;
+			$$v = htmlspecialchars($$v);
+		}
 	}
 ?>
