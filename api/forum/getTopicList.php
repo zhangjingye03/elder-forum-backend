@@ -9,7 +9,8 @@
 	$cid = get_category_id($cn);
 
 	$q->select("*")
-	  ->from("category_" . $cid);
+	  ->from("category_" . $cid)
+	  ->where("`draft` != 1");
 	if ($sort == "create_time_dsc")
 		$q->orderBy("create_time")->desc();
 	else if ($sort == "reply_time_dsc")

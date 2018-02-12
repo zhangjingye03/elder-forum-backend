@@ -15,6 +15,7 @@
 	if (!is_admin()) die_with_code(403);
 	check_post_args("name", "alias", "description", "icon", "owner");
 	read_required_post_args("name", "alias", "description", "icon", "owner");
+	anti_xss("alias", "description");
 
 	try {
 		$q = new SQLStatement;
@@ -24,7 +25,7 @@
 		  ->execute();
 		if ($q->rowCount() > 0) throw new \Exception("failed", "所创建版块的名称冲突。");
 
-		$q->insertInto("category", ["name", "alias", "description", "icon", "owner"], $name, $alias, $description, $icon, $owner)
+		$q->insertInto("category", ["name", "alias", "description", "icon", "owner"], [$name, $alias, $description, $icon, $owner])
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category表失败。");
 		$cid = $q->lastInsertId();
