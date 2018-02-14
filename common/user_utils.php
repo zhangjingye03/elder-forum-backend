@@ -56,38 +56,44 @@
 	}
 
 	function is_category_owner($cid) {
-		$q = new SQLStatement;
-		$q->select("owner")
-		  ->from("category")
-		  ->where("id = ?", $cid, PDO::PARAM_INT)
-		  ->execute();
-		if ($q->rowCount() < 1) return false;
-		$r = $q->fetch()["owner"];
-		if ($r == $_SESSION["username"]) return true;
+		try {
+			$q = new SQLStatement;
+			$q->select("owner")
+			  ->from("category")
+			  ->where("id = ?", $cid, PDO::PARAM_INT)
+			  ->execute();
+			if ($q->rowCount() < 1) return false;
+			$r = $q->fetch()["owner"];
+			if ($r == $_SESSION["username"]) return true;
+		} catch () {}
 		return false;
 	}
 
 	function is_topic_owner($cid, $tid) {
-		$q = new SQLStatement;
-		$q->select("author")
-		  ->from("category_{$cid}")
-		  ->where("id = ?", $tid, PDO::PARAM_INT)
-		  ->execute();
-		if ($q->rowCount() < 1) return false;
-		$r = $q->fetch()["author"];
-		if ($r == $_SESSION["username"]) return true;
+		try {
+			$q = new SQLStatement;
+			$q->select("author")
+			  ->from("category_{$cid}")
+			  ->where("id = ?", $tid, PDO::PARAM_INT)
+			  ->execute();
+			if ($q->rowCount() < 1) return false;
+			$r = $q->fetch()["author"];
+			if ($r == $_SESSION["username"]) return true;
+		} catch () {}
 		return false;
 	}
 
 	function is_topic_reply_owner($cid, $tid, $rid) {
-		$q = new SQLStatement;
-		$q->select("author")
-		  ->from("category_{$cid}_{$tid}")
-		  ->where("id = ?", $rid, PDO::PARAM_INT)
-		  ->execute();
-		if ($q->rowCount() < 1) return false;
-		$r = $q->fetch()["author"];
-		if ($r == $_SESSION["username"]) return true;
+		try {
+			$q = new SQLStatement;
+			$q->select("author")
+			  ->from("category_{$cid}_{$tid}")
+			  ->where("id = ?", $rid, PDO::PARAM_INT)
+			  ->execute();
+			if ($q->rowCount() < 1) return false;
+			$r = $q->fetch()["author"];
+			if ($r == $_SESSION["username"]) return true;
+		} catch () {}
 		return false;
 	}
 ?>

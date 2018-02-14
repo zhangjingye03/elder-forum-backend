@@ -27,6 +27,7 @@
 	function anti_xss(...$arr) {
 		foreach ($arr as $k => $v) {
 			global $$v;
+			if (!isset($$v)) continue;
 			$$v = htmlspecialchars($$v);
 		}
 	}
