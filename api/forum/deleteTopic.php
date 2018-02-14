@@ -13,6 +13,13 @@
 		$q = new SQLStatement;
 		$q->dropTable("category_{$cid}_{$tid}")->execute();
 		if ($q->rowCount() < 1) throw new \Exception("删除失败。");
+
+		# 更新主题数量
+		$q->update("category")
+		  ->set("`topic` = `topic` - 1")
+		  ->where("`id` = ?", $cid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category表失败！");
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}

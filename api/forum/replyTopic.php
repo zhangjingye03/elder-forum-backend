@@ -25,6 +25,13 @@
 	$user = $_SESSION["username"];
 
 	try {
+		$q = new SQLStatement;
+		$q->select("id")
+		  ->from("category_{$cid}")
+		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("帖子不存在！");
+
 		$q->select("id")
 		  ->from("category_{$cid}_topic_{$tid}");
 		if ($reply_id != 0)
@@ -35,6 +42,21 @@
 		$q->insertInto("category_{$cid}_topic_{$tid}", ["author", "content", "reply_id"], [$user, $content, $reply_id])
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_{$tid}表失败。");
+
+		# 更新版块中帖子信息
+		$q->update("category_{$cid}")
+		  ->set("`last_replier` = ?, `reply` = `reply` + 1, `last_replt_time` = CURRENT_TIMESTAMP", $user)
+		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}表失败！");
+
+		# 更新版块回复数量
+		$q->update("category")
+		  ->set("`reply` = `reply` + 1")
+		  ->where("`id` = ?", $cid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category表失败！");
+
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}

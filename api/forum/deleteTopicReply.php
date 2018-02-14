@@ -20,6 +20,19 @@
 		  ->where("id = ?", $rid, PDO::PARAM_INT)
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("删除失败。");
+
+		# 更新主题回复数量
+		$q->update("category_{$cid}")
+		  ->set("`reply` = `reply` - 1")
+		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}表失败！");
+
+		$q->update("category")
+		  ->set("`reply` = `reply` - 1")
+		  ->where("`id` = ?", $cid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category表失败！");
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}

@@ -40,6 +40,14 @@
 		$q->insertInto("category_{$cid}_topic_{$tid}", ["author", "content"], [$user, $content])
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_{$tid}表失败。");
+
+		# 更新主题数量
+		$q->update("category")
+		  ->set("`topic` = `topic` + 1")
+		  ->where("`id` = ?", $cid, PDO::PARAM_INT)
+		  ->execute();
+		if ($q->rowCount() < 1) throw new \Exception("更新category表失败！");
+
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}
