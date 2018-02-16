@@ -25,5 +25,6 @@
 	if (get_remaining_slash_arg_count() != 0 && !is_admin()) {
 		$r = copy_array_from_specified_content($r, "username", "alias", "avatar");
 	}
-	die(json_encode($r));
+
+	die_arr_in_json($r);
 ?>
