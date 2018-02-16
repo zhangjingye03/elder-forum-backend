@@ -23,7 +23,6 @@
 		$q->where("author = ?", $username);
 	$q->limit(calc_limit_offset($count, $page), $count)
 	  ->execute();
-	var_dump($q);
 	$r = $q->fetchAll();
 
 	die_arr_in_json($r);
