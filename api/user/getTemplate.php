@@ -1,7 +1,7 @@
 <?php
 
 	check_get_args("type");
-
+	header('Content-Type: application/json');
 	switch ($_GET['type']) {
 		case "login":
 			die(file_get_contents("config/template_login.json"));
