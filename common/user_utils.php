@@ -62,10 +62,10 @@
 			  ->from("category")
 			  ->where("id = ?", $cid, PDO::PARAM_INT)
 			  ->execute();
-			if ($q->rowCount() < 1) return false;
-			$r = $q->fetch()["owner"];
-			if ($r == $_SESSION["username"]) return true;
-		} catch () {}
+			$r = $q->fetch();
+  			if (sizeof($r) == 0) return false;
+  			if ($r["owner"] == $_SESSION["username"]) return true;
+		} catch (Exception $ex) {}
 		return false;
 	}
 
@@ -76,10 +76,10 @@
 			  ->from("category_{$cid}")
 			  ->where("id = ?", $tid, PDO::PARAM_INT)
 			  ->execute();
-			if ($q->rowCount() < 1) return false;
-			$r = $q->fetch()["author"];
-			if ($r == $_SESSION["username"]) return true;
-		} catch () {}
+			$r = $q->fetch();
+  			if (sizeof($r) == 0) return false;
+  			if ($r["author"] == $_SESSION["username"]) return true;
+		} catch (Exception $ex) {}
 		return false;
 	}
 
@@ -87,13 +87,13 @@
 		try {
 			$q = new SQLStatement;
 			$q->select("author")
-			  ->from("category_{$cid}_{$tid}")
+			  ->from("category_{$cid}_topic_{$tid}")
 			  ->where("id = ?", $rid, PDO::PARAM_INT)
 			  ->execute();
-			if ($q->rowCount() < 1) return false;
-			$r = $q->fetch()["author"];
-			if ($r == $_SESSION["username"]) return true;
-		} catch () {}
+			$r = $q->fetch();
+			if (sizeof($r) == 0) return false;
+			if ($r["author"] == $_SESSION["username"]) return true;
+		} catch (Exception $ex) {}
 		return false;
 	}
 ?>

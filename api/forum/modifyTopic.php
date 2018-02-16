@@ -11,18 +11,17 @@
  * ===========================================
  */
 
-	check_post_captcha();
-	read_required_post_args("title", "content");
+	check_put_captcha();
+	read_required_put_args("title", "content");
 	anti_xss("title", "content");
 	$draft = $top = false;
-	read_optional_post_args("draft", "top");
+	read_optional_put_args("draft", "top");
 
 	$cn = get_next_slash_arg();
 	$cid = get_category_id($cn);
-	$tid = get_next_slash_arg();
-	if (!is_integer($tid)) die_with_code(400);
+	$tid = intval(get_next_slash_arg());
 
-	if (!is_topic_owner($cid, $tid) || !is_admin() || !is_category_owner($cid)) die_with_code(403);
+	if (!is_topic_owner($cid, $tid) && !is_admin() && !is_category_owner($cid)) die_with_code(403);
 
 	# 只有版主/管理员才可以设置置顶
 	if ($top) {
@@ -33,11 +32,11 @@
 
 	try {
 		$q = new SQLStatement;
-		$q->select("id")
+		$q->selectCount()
 		  ->from("category_{$cid}")
 		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("帖子不存在！");
+		if ($q->fetchCount() < 1) throw new \Exception("帖子不存在！");
 
 		$q->update("category_{$cid}")
 		  ->set("`title` = ?, `top` = ?, `draft` = ?", [$title, $top, $draft])
@@ -49,7 +48,7 @@
 		  ->set("`content` = ?", $content)
 		  ->where("`id` = 0")
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}_{$tid}表失败！");
+		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}_topic_{$tid}表失败！");
 
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());

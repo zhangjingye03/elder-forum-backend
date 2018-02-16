@@ -28,6 +28,11 @@
 
 		push_user_session($r["uid"], $username, $r["email"], $r["alias"], $r["avatar"]);
 
+		$q->update("user")
+		  ->set("`last_login_time` = CURRENT_TIMESTAMP, `ip` = ?", $_SERVER["REMOTE_ADDR"])
+		  ->where("uid = ?", $r["uid"])
+		  ->execute();
+
 		# TODO: 跳转到登录前的页面
 		die_in_json("ok", null, "/forum/");
 	} catch (Exception $ex) {

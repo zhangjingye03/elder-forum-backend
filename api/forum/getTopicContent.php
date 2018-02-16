@@ -1,7 +1,7 @@
 <?php
 	$cn = get_next_slash_arg();
-	$tid = get_next_slash_arg();
-	if (!is_integer($tid)) die_with_code(400);
+	$tid = intval(get_next_slash_arg());
+
 	$count = 20;
 	$page = 1;
 	$username = "";
@@ -10,6 +10,7 @@
 
 	$cid = get_category_id($cn);
 
+	$q = new SQLStatement;
 	# 浏览量+1
 	$q->update("category_" . $cid)
 	  ->set("`view` = `view` + 1")
@@ -17,10 +18,13 @@
 
 	# 返回帖子内容
 	$q->select("*")
-	  ->from("category_" . $cid . "_topic_" . ($tid - 0));
-	  ->limit(calc_limit_offset($count, $page), $count);
+	  ->from("category_" . $cid . "_topic_" . $tid);
+	if (strlen($username) > 0)
+		$q->where("author = ?", $username);
+	$q->limit(calc_limit_offset($count, $page), $count)
 	  ->execute();
+	var_dump($q);
 	$r = $q->fetchAll();
 
-	die(json_encode($r));
+	die_arr_in_json($r);
 ?>

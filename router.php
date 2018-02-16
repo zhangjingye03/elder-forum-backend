@@ -17,12 +17,13 @@
 
 	# 临时引用变量，指向第一级路由入口
 	$_tmp_ref = $_routes;
-	$_found = -1;
+	# _found用于记录找到几级入口，_arg_pos用于记录获取到斜杠参数的位置
+	$_found = $_arg_pos = -1;
 	foreach ($_request as $_sub) {
 		if (!isset($_tmp_ref)) break;
 		# 如果存在下一级入口，则将临时引用变量设置为下一级入口
 		if (isset($_tmp_ref[$_sub])) {
-			$_found++;
+			$_found++; $_arg_pos++;
 			$_tmp_ref = $_tmp_ref[$_sub];
 		}
 	}
@@ -35,10 +36,5 @@
 	# echo($_tmp_ref);
 	if (!file_exists($_tmp_ref)) die_with_code(410);
 	session_start();
-	# require_once($_tmp_ref);
-	try {
-		require_once($_tmp_ref);
-	} catch (Exception $ex) {
-		die_in_json("error", $ex->getTraceAsString());
-	}
+	require_once($_tmp_ref);
 ?>

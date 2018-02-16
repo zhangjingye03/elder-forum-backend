@@ -138,11 +138,11 @@
 	}
 
 	function get_next_slash_arg() {
-		global $_request, $_found;
-		if (!isset($_request[$_found + 1]))
+		global $_request, $_arg_pos;
+		if (!isset($_request[$_arg_pos + 1]))
 			throw new \Exception("No next slash arg.", 1);
 
-		return $_request[++$_found];
+		return $_request[++$_arg_pos];
 	}
 
 

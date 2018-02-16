@@ -22,6 +22,12 @@
 			$j['reason'] = $reason;
 		if (isset($go))
 			$j['go'] = $go;
+		header('Content-Type: application/json');
 		die(json_encode($j));
+	}
+
+	function die_arr_in_json($arr) {
+		header('Content-Type: application/json');
+		die(json_encode($arr));
 	}
 ?>

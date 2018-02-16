@@ -27,6 +27,7 @@
 	$user = $_SESSION["username"];
 
 	try {
+		$q = new SQLStatement;
 		$q->insertInto("category_{$cid}", ["title", "author", "last_replier", "top", "draft"], [$title, $user, $user, $top, $draft])
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}表失败。");
@@ -35,11 +36,10 @@
 		$q->createTable("category_{$cid}_topic_{$tid}")
 		  ->like("category_T_topic_T")
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("创建category_{$cid}_{$tid}表失败！");
 
 		$q->insertInto("category_{$cid}_topic_{$tid}", ["author", "content"], [$user, $content])
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_{$tid}表失败。");
+		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_topic_{$tid}表失败。");
 
 		# 更新主题数量
 		$q->update("category")

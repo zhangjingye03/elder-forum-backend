@@ -14,16 +14,16 @@
 	$password = $_POST["password"];
 	$alias = $_POST["alias"];
 	$email = $_POST["email"];
+	$ip = $_SERVER['REMOTE_ADDR'];
 
 	check_user_existence($username, $email, $alias);
-	check_sensitive_words($alias, $username);
 
 	try {
 		$q = new SQLStatement;
 
-		$q->insertInto("user", ["username", "password", "email", "alias"], [$username, $password, $email, $alias])
+		$q->insertInto("user", ["username", "password", "email", "alias", "ip"], [$username, $password, $email, $alias, $ip])
 		  ->execute();
-
+		
 		if ($q->rowCount() != 1)
 			throw new \Exception("注册失败，未知错误。", 1);
 

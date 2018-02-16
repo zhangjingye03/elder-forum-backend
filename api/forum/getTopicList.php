@@ -8,6 +8,7 @@
 
 	$cid = get_category_id($cn);
 
+	$q = new SQLStatement;
 	$q->select("*")
 	  ->from("category_" . $cid)
 	  ->where("`draft` != 1");
@@ -18,9 +19,9 @@
 	else if ($sort == "reply_dsc")
 		$q->orderBy("reply")->desc();
 
-	$q->limit(calc_limit_offset($count, $page), $count);
+	$q->limit(calc_limit_offset($count, $page), $count)
 	  ->execute();
 	$r = $q->fetchAll();
 
-	die(json_encode($r));
+	die_arr_in_json($r);
 ?>

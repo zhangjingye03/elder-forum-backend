@@ -16,7 +16,7 @@
 	$cn = get_next_slash_arg();
 	$cid = get_category_id($cn);
 
-	if (!is_admin() || !is_category_owner($cid)) die_with_code(403);
+	if (!is_admin() && !is_category_owner($cid)) die_with_code(403);
 
 	read_required_post_args("name", "alias", "description", "icon", "owner");
 	anti_xss("alias", "description");

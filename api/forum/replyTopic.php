@@ -19,33 +19,33 @@
 
 	$cn = get_next_slash_arg();
 	$cid = get_category_id($cn);
-	$tid = get_next_slash_arg();
-	if (!is_integer($tid)) die_with_code(400);
+	$tid = intval(get_next_slash_arg());
 
 	$user = $_SESSION["username"];
 
 	try {
 		$q = new SQLStatement;
-		$q->select("id")
+		$q->selectCount()
 		  ->from("category_{$cid}")
 		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("帖子不存在！");
+		if ($q->fetchCount() < 1) throw new \Exception("帖子不存在！");
 
-		$q->select("id")
-		  ->from("category_{$cid}_topic_{$tid}");
-		if ($reply_id != 0)
-			$q->where("id = ?", $reply_id, PDO::PARAM_INT);
-		$q->execute();
-		if ($q->rowCount() < 1) throw new \Exception("帖子或者指定楼层不存在！");
+		if ($reply_id != 0) {
+			$q->select("COUNT(*)")
+			  ->from("category_{$cid}_topic_{$tid}")
+			  ->where("id = ?", $reply_id, PDO::PARAM_INT)
+			  ->execute();
+			if ($q->fetchCount() < 1) throw new \Exception("指定楼层不存在！");
+		}
 
 		$q->insertInto("category_{$cid}_topic_{$tid}", ["author", "content", "reply_id"], [$user, $content, $reply_id])
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_{$tid}表失败。");
+		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_topic_{$tid}表失败。");
 
 		# 更新版块中帖子信息
 		$q->update("category_{$cid}")
-		  ->set("`last_replier` = ?, `reply` = `reply` + 1, `last_replt_time` = CURRENT_TIMESTAMP", $user)
+		  ->set("`last_replier` = ?, `reply` = `reply` + 1, `last_reply_time` = CURRENT_TIMESTAMP", $user)
 		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}表失败！");

@@ -17,14 +17,17 @@
  * ===========================================================
  */
 	class SQLStatement {
-		var $s, $arg, $type, $dbo, $db;
+		var $s, $arg, $argc, $type, $dbo, $db, $debug;
 		function __construct($default = '') {
 			require_once('config/database.php');
 			try {
+				global $_dsn, $_username, $_password, $_debug;
+				$this->debug = $_debug;
 				$this->db = new PDO($_dsn, $_username, $_password);
 			} catch (PDOException $ex) {
 				die("PDO initializing failed. Reason: " . $ex->getMessage());
 			}
+			$this->initialize();
 			$this->s = $default;
 		}
 
@@ -42,14 +45,20 @@
 			return $this;
 		}
 
+		function selectCount() {
+			$this->s .= "SELECT COUNT(*) ";
+			return $this;
+		}
+
 		function update($what) {
 			if (!is_string($what))
 				throw new \Exception("Unsupported type.", 1);
 			$this->s .= "UPDATE {$what} ";
+			return $this;
 		}
 
 		function insertInto($table, $col, $arg, $type = null) {
-			$this->arg = $arg; $this->type = $type;
+			$this->bind($arg, $type);
 			$this->s .= "INSERT INTO {$table} (" . $this->strize($col) . ") VALUES (";
 			if (is_array($arg)) {
 				for ($i = 0; $i < sizeof($arg); $i++) {
@@ -61,18 +70,23 @@
 			else
 				throw new \Exception("Unsupported type.", 1);
 			$this->s .= ")";
+
+			return $this;
 		}
 
 		function createTable($name) {
 			$this->s .= "CREATE TABLE {$name} ";
+			return $this;
 		}
 
 		function dropTable($which) {
 			$this->s .= "DROP TABLE `{$which}` ";
+			return $this;
 		}
 
 		function deleteFrom($which) {
 			$this->s .= "DELETE FROM `{$which}` ";
+			return $this;
 		}
 
 		function from($what) {
@@ -82,20 +96,19 @@
 
 		function set($what, $arg = null, $type = null) {
 			$this->s .= "SET {$what} ";
-			$this->arg = $arg;
-			$this->type = $type;
+			$this->bind($arg, $type);
 			return $this;
 		}
 
 		function where($what, $arg = null, $type = null) {
 			$this->s .= "WHERE {$what} ";
-			$this->arg = $arg;
-			$this->type = $type;
+			$this->bind($arg, $type);
 			return $this;
 		}
 
 		function like($what) {
 			$this->s .= "LIKE {$what} ";
+			return $this;
 		}
 
 		function orderBy($what) {
@@ -116,25 +129,53 @@
 		function limit($arg1, $arg2 = null) {
 			$this->s .= "LIMIT {$arg1} ";
 			if ($arg2 != null) $this->s .= ", {$arg2} ";
+			return $this;
+		}
+
+		private function bind($arg, $type) {
+			if (is_array($arg)) {
+				foreach ($arg as $k => $v) {
+					$this->arg[$this->argc] = $v;
+					if ($type == null)
+						$this->type[$this->argc] = PDO::PARAM_STR;
+					else
+						$this->type[$this->argc] = $type[$k];
+					$this->argc++;
+				}
+			} else if (is_string($arg)) {
+				$this->arg[$this->argc] = $arg;
+				$this->type[$this->argc++] = ($type == null) ? PDO::PARAM_STR : $type;
+			} else if (is_integer($arg)) {
+				$this->arg[$this->argc] = $arg;
+				$this->type[$this->argc++] = PDO::PARAM_INT;
+			}
 		}
 
 		function execute() {
-			$this->dbo = $this->db->prepare($this->s . ";");
-			if (is_array($this->arg)) {
-				for ($i = 0; $i < sizeof($this->arg); $i++) {
-					if ($this->type == null)
-						$this->dbo->bindParam($i + 1, $this->arg[$i], PDO::PARAM_STR);
-					else
-						$this->dbo->bindParam($i + 1, $this->arg[$i], $this->type[$i]);
-				}
-			} else if (is_string($this->arg)) {
-				$this->dbo->bindParam(1, $this->arg, ($this->type == null) ? PDO::PARAM_STR : $this->type);
+			if ($this->debug) {
+				ob_start();
+				echo("Begin to execute {$this->s} with args: \n");
+				var_dump($this->arg);
+				$res = ob_get_clean();
+				file_put_contents(__DIR__ . "debug.txt", $res, FILE_APPEND);
 			}
+			$this->dbo = $this->db->prepare($this->s . ";");
+			for ($i = 0; $i < sizeof($this->arg); $i++)
+				$this->dbo->bindParam($i + 1, $this->arg[$i], $this->type[$i]);
 			$this->dbo->execute();
-			$this->s = "";
+
+			$this->initialize();
+
 			if ($this->dbo->errorCode() != 0)
-				throw new \Exception(var_dump($this->dbo->errorInfo()), 1);
+				throw new \Exception("Database error: " . $this->dbo->errorInfo()[2]);
 			return $this;
+		}
+
+		function initialize() {
+			$this->s = "";
+			$this->argc = 0;
+			$this->arg = [];
+			$this->type = [];
 		}
 
 		function debug() {
@@ -145,6 +186,12 @@
 			if ($this->dbo == null)
 				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
 			return $this->dbo->rowCount();
+		}
+
+		function fetchCount() {
+			if ($this->dbo == null)
+				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
+			return $this->dbo->fetch()["COUNT(*)"];
 		}
 
 		function fetch() {
@@ -162,12 +209,11 @@
 		function lastInsertId() {
 			if ($this->dbo == null)
 				throw new \Exception("The SQL statement hasn't been executed yet.", 1);
-			return $this->dbo->lastInsertId() - 0;
+			return $this->db->lastInsertId() - 0;
 		}
 	}
 
 	function calc_limit_offset($count, $page) {
-		if (!is_integer($count) || !is_integer($page)) return 0;
-		return ($page - 1) * $count
+		return (intval($page) - 1) * intval($count);
 	}
 ?>

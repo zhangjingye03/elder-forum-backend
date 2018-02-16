@@ -11,39 +11,38 @@
  * =======================================
  */
 
-	check_post_captcha();
-	read_required_post_args("content");
+	check_put_captcha();
+	read_required_put_args("content");
 	anti_xss("content");
 
 	$cn = get_next_slash_arg();
 	$cid = get_category_id($cn);
-	$tid = get_next_slash_arg();
-	$rid = get_next_slash_arg();
-	if (!is_integer($tid) || !is_integer($rid)) die_with_code(400);
+	$tid = intval(get_next_slash_arg());
+	$rid = intval(get_next_slash_arg());
 
-	if (!is_admin() || !is_topic_reply_owner($cid, $tid, $rid)) die_with_code(403);
+	if (!is_admin() && !is_topic_reply_owner($cid, $tid, $rid)) die_with_code(403);
 
 	$user = $_SESSION["username"];
 
 	try {
 		$q = new SQLStatement;
-		$q->select("id")
+		$q->selectCount()
 		  ->from("category_{$cid}")
 		  ->where("`id` = ?", $tid, PDO::PARAM_INT)
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("帖子不存在！");
+		if ($q->fetchCount() < 1) throw new \Exception("帖子不存在！");
 
-		$q->select("id")
+		$q->selectCount()
 		  ->from("category_{$cid}_topic_{$tid}")
 		  ->where("`id` = ?", $rid, PDO::PARAM_INT)
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("指定楼层不存在！");
+		if ($q->fetchCount() < 1) throw new \Exception("指定楼层不存在！");
 
 		$q->update("category_{$cid}_topic_{$tid}")
 		  ->set("`content` = ?", $content)
 		  ->where("`id` = ?", $rid, PDO::PARAM_INT)
 		  ->execute();
-		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}_{$tid}表失败。");
+		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}_topic_{$tid}表失败。");
 
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
