@@ -10,6 +10,7 @@
   * `routes.php`：路由配置文件
   * `template_*.json`：填写登录/注册/修改个人信息时的模板
 * `vendor` 和 `composer.lock`、`composer.json`：composer相关文件
+* `router.php`：论坛URL路由处理文件
 
 
 ## nginx 配置指南
