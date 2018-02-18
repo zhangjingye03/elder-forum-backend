@@ -106,6 +106,18 @@
 			return $this;
 		}
 
+		function and($what, $arg = null, $type = null) {
+			$this->s .= "AND ";
+			$this->bind($arg, $type);
+			return $this;
+		}
+
+		function or($what, $arg = null, $type = null) {
+			$this->s .= "OR ";
+			$this->bind($arg, $type);
+			return $this;
+		}
+
 		function like($what) {
 			$this->s .= "LIKE {$what} ";
 			return $this;
