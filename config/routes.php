@@ -24,4 +24,8 @@
 	$_routes["api"]["forum"] = [];
 	$_routes["api"]["forum"][""] = "api/forum/forum_router.php";
 
+	# 搜索 API
+	$_routes["api"]["search"] = [];
+	$_routes["api"]["search"]["user"] = "api/user/search.php";
+	$_routes["api"]["search"]["forum"] = "api/forum/search.php";
 ?>
