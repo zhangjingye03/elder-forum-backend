@@ -42,6 +42,9 @@
 		$q->insertInto("category_{$cid}_topic_{$tid}", ["author", "content", "reply_id"], [$user, $content, $reply_id])
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_topic_{$tid}表失败。");
+		$rid = $q->lastInsertId();
+
+		log_to_reply_index($q, $cn, $cid, $tid, $rid, $user, $content);
 
 		# 更新版块中帖子信息
 		$q->update("category_{$cid}")
@@ -56,7 +59,6 @@
 		  ->where("`id` = ?", $cid, PDO::PARAM_INT)
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("更新category表失败！");
-
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}

@@ -44,6 +44,8 @@
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("更新category_{$cid}_topic_{$tid}表失败。");
 
+		log_to_reply_index($q, $cn, $cid, $tid, $rid, $user, $content);
+
 	} catch (Exception $ex) {
 		die_in_json("failed", $ex->getMessage());
 	}

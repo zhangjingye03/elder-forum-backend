@@ -41,6 +41,8 @@
 		  ->execute();
 		if ($q->rowCount() < 1) throw new \Exception("插入category_{$cid}_topic_{$tid}表失败。");
 
+		log_to_reply_index($q, $cn, $cid, $tid, 1, $user, $content);
+
 		# 更新主题数量
 		$q->update("category")
 		  ->set("`topic` = `topic` + 1")
